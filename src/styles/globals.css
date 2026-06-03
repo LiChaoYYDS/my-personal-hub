@@ -1,0 +1,66 @@
+@import './tokens.css';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--color-bg-subtle);
+    color: var(--color-text);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  a { color: inherit; }
+  ::selection { background: var(--color-accent); color: #fff; }
+}
+
+@layer utilities {
+  .text-gradient {
+    background: linear-gradient(135deg, #1f2937 0%, #6b7280 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .dark .text-gradient {
+    background: linear-gradient(135deg, #f9fafb 0%, #d1d5db 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
+
+  .card-glass {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-sm);
+  }
+  .dark .card-glass {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+  }
+}
+
+/* 浮动光晕 */
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-24px); }
+}
+@keyframes float-slow-reverse {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(24px); }
+}
+.animate-float { animation: float-slow 8s ease-in-out infinite; }
+.animate-float-reverse { animation: float-slow-reverse 10s ease-in-out infinite; }
+
+/* 打字机光标 */
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+.cursor-blink { animation: blink 1s step-end infinite; }
+
+/* Prose 表格样式修复 */
+.prose table { width: 100%; border-collapse: collapse; }
+.prose th, .prose td { border: 1px solid var(--color-border); padding: 0.5rem 0.75rem; text-align: left; }
+.prose th { background: var(--color-bg-subtle); font-weight: 600; }
+.prose tr:nth-child(even) td { background: var(--color-bg-subtle); }

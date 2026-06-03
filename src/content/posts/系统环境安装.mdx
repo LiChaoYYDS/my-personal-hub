@@ -1,0 +1,82 @@
+---
+title: 系统环境安装
+date: '2026-06-03'
+tags:
+  - 环境配置
+  - Docker
+  - PostgreSQL
+category: Postgres、docker
+summary: >-
+  介绍开发环境所需组件（Node.js、PostgreSQL、MinIO等）的安装方式，重点讲解如何用Docker运行PostgreSQL容器，包括镜像拉取、数据持久化、端口映射及连接验证。
+published: true
+---
+
+# 你需要安装的软件 / 服务清单
+
+| 组件 | 安装方式 | 用途 |
+|------|----------|------|
+| Node.js (v18+) | 官网下载或 nvm | 运行 Next.js 项目 |
+| pnpm / npm / yarn | 随 Node.js 自带（推荐 pnpm） | 安装依赖包 |
+| PostgreSQL | 本地直接安装 / Docker（推荐） | 主数据库 |
+| MinIO | 本地二进制 / Docker（推荐） | 对象存储（文件上传） |
+| Docker & Docker Compose（可选） | Docker Desktop | 一键启动 PostgreSQL + MinIO |
+
+# 使用 Docker 安装 PostgreSQL
+
+使用 Docker 安装 PostgreSQL 是最省心的方法，避免在本地安装配置数据库的麻烦。
+
+## 1. 获取官方镜像
+
+拉取生产环境推荐版本：
+
+```bash
+docker pull postgres:16
+```
+
+## 2. 运行 PostgreSQL 容器
+
+```bash
+docker run -d \
+  --name my-postgres \
+  -e POSTGRES_PASSWORD=yourpassword \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_DB=hub \
+  -v pgdata:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  postgres:16
+```
+
+参数说明：
+
+- `-d`：后台静默运行
+- `--name my-postgres`：容器名称
+- `-e POSTGRES_PASSWORD`：必需，设置超级用户密码
+- `-e POSTGRES_DB=hub`：启动时自动创建的数据库名
+- `-v pgdata:...`：数据持久化，删除容器数据不丢失
+- `-p 5432:5432`：端口映射
+
+> 如果 5432 端口已占用，可改为 `-p 5433:5432`，同时修改 `.env` 中的 `DATABASE_URL` 端口为 5433。
+
+## 3. 验证连接
+
+查看运行状态：
+
+```bash
+docker ps
+```
+
+进入容器测试连接：
+
+```bash
+docker exec -it my-postgres psql -U postgres -d hub
+```
+
+看到 `hub=#` 提示符即表示连接成功。
+
+也可使用 DataGrip、DBeaver、Navicat 等图形化工具连接：
+
+- **Host**：localhost
+- **Port**：5432
+- **User**：postgres
+- **Password**：你设置的密码
+- **Database**：hub

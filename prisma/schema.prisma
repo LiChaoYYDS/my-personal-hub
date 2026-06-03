@@ -1,0 +1,40 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+model LifeRecord {
+  id        String   @id @default(cuid())
+  content   String
+  images    String[]
+  location  String?
+  mood      String?
+  createdAt DateTime @default(now())
+}
+
+model Upload {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  url       String
+  size      Int
+  mimeType  String
+  createdAt DateTime @default(now())
+}
+
+model AiConversation {
+  id        String   @id @default(cuid())
+  query     String
+  response  String
+  createdAt DateTime @default(now())
+}

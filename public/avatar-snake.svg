@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a472a"/>
+      <stop offset="100%" stop-color="#0d2b1a"/>
+    </radialGradient>
+    <radialGradient id="skin" cx="40%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#4CAF50"/>
+      <stop offset="100%" stop-color="#2E7D32"/>
+    </radialGradient>
+    <radialGradient id="eye-grad" cx="30%" cy="30%" r="70%">
+      <stop offset="0%" stop-color="#FFD700"/>
+      <stop offset="100%" stop-color="#FF8C00"/>
+    </radialGradient>
+  </defs>
+
+  <!-- 背景圆 -->
+  <circle cx="100" cy="100" r="98" fill="url(#bg)" stroke="#2E7D32" stroke-width="3"/>
+
+  <!-- 装饰纹路（年轮/鳞片感） -->
+  <circle cx="100" cy="100" r="75" fill="none" stroke="#2E7D32" stroke-width="1" opacity="0.4"/>
+  <circle cx="100" cy="100" r="55" fill="none" stroke="#2E7D32" stroke-width="1" opacity="0.3"/>
+
+  <!-- 蛇身（S形曲线） -->
+  <path d="M 75 160
+           C 30 150, 25 120, 55 105
+           C 85 90, 120 95, 130 75
+           C 140 55, 120 30, 95 35
+           C 70 40, 65 60, 80 70"
+        fill="none" stroke="url(#skin)" stroke-width="22" stroke-linecap="round"/>
+
+  <!-- 蛇身花纹 -->
+  <path d="M 75 160
+           C 30 150, 25 120, 55 105
+           C 85 90, 120 95, 130 75
+           C 140 55, 120 30, 95 35
+           C 70 40, 65 60, 80 70"
+        fill="none" stroke="#81C784" stroke-width="10" stroke-linecap="round" stroke-dasharray="8 14" opacity="0.6"/>
+
+  <!-- 蛇头 -->
+  <ellipse cx="80" cy="70" rx="18" ry="13" fill="#388E3C" transform="rotate(-20 80 70)"/>
+
+  <!-- 眼睛 -->
+  <circle cx="86" cy="63" r="5" fill="url(#eye-grad)"/>
+  <circle cx="86" cy="63" r="2.5" fill="#1a0000"/>
+  <circle cx="87.5" cy="61.5" r="1" fill="white" opacity="0.8"/>
+
+  <!-- 分叉舌头 -->
+  <path d="M 68 72 L 55 70 M 55 70 L 50 66 M 55 70 L 50 74"
+        stroke="#E53935" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+
+  <!-- 鳞片纹理点缀 -->
+  <ellipse cx="70" cy="105" rx="5" ry="3" fill="#66BB6A" opacity="0.5" transform="rotate(-30 70 105)"/>
+  <ellipse cx="95" cy="90" rx="5" ry="3" fill="#66BB6A" opacity="0.5" transform="rotate(-10 95 90)"/>
+  <ellipse cx="115" cy="78" rx="5" ry="3" fill="#66BB6A" opacity="0.5" transform="rotate(20 115 78)"/>
+  <ellipse cx="110" cy="50" rx="4" ry="2.5" fill="#66BB6A" opacity="0.5" transform="rotate(40 110 50)"/>
+
+  <!-- 蛇年文字 -->
+  <text x="100" y="185" text-anchor="middle" font-family="serif" font-size="13"
+        fill="#A5D6A7" letter-spacing="4">蛇 年</text>
+
+  <!-- 装饰小点 -->
+  <circle cx="38" cy="38" r="2" fill="#FFD700" opacity="0.6"/>
+  <circle cx="162" cy="38" r="2" fill="#FFD700" opacity="0.6"/>
+  <circle cx="38" cy="162" r="2" fill="#FFD700" opacity="0.6"/>
+  <circle cx="162" cy="162" r="2" fill="#FFD700" opacity="0.6"/>
+</svg>
