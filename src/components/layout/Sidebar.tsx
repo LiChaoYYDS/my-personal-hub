@@ -1,38 +1,36 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { getAllPosts, getAllProjects } from '@/lib/mdx'
+import { getAllProjects } from '@/lib/mdx'
 import { prisma } from '@/lib/prisma'
 
 export async function Sidebar() {
-  const posts = getAllPosts().filter(p => p.frontmatter.published)
+  const [blogCount, lifeCount, latestPosts] = await Promise.all([
+    prisma.blogPost.count({ where: { published: true } }),
+    prisma.lifeRecord.count(),
+    prisma.blogPost.findMany({
+      where: { published: true },
+      orderBy: { date: 'desc' },
+      take: 5,
+      select: { slug: true, title: true },
+    }),
+  ])
+
   const projects = getAllProjects().filter(p => (p.frontmatter as any).published !== false)
-
-  const tags = new Set(posts.flatMap(p => p.frontmatter.tags ?? []))
-  const categories = new Set(posts.map(p => p.frontmatter.category).filter(Boolean))
-
-  let lifeCount = 0
-  try { lifeCount = await prisma.lifeRecord.count() } catch {}
-
-  const latestPosts = posts.slice(0, 5)
 
   return (
     <aside className="space-y-4 w-72 shrink-0">
       <div className="card-glass p-5 text-center space-y-3">
         <div className="mx-auto w-20 h-20 rounded-full overflow-hidden ring-2 ring-border">
-          <Image
-            src="/avatar-snake.svg"
-            alt="avatar" width={80} height={80}
-            className="w-full h-full object-cover"
-          />
+          <Image src="/avatar-snake.svg" alt="avatar" width={80} height={80} className="w-full h-full object-cover" />
         </div>
         <div>
           <p className="font-bold text-base text-text">ChaoBlog</p>
           <p className="text-xs text-secondary mt-1">全栈开发者 · AI 实践者 · 创作者</p>
         </div>
         <div className="flex justify-center gap-6 py-2 border-y border-border text-center">
-          <div><p className="font-bold text-sm text-text">{posts.length}</p><p className="text-xs text-muted">文章</p></div>
-          <div><p className="font-bold text-sm text-text">{tags.size}</p><p className="text-xs text-muted">项目</p></div>
-          <div><p className="font-bold text-sm text-text">{categories.size}</p><p className="text-xs text-muted">生活记录</p></div>
+          <div><p className="font-bold text-sm text-text">{blogCount}</p><p className="text-xs text-muted">文章</p></div>
+          <div><p className="font-bold text-sm text-text">{projects.length}</p><p className="text-xs text-muted">项目</p></div>
+          <div><p className="font-bold text-sm text-text">{lifeCount}</p><p className="text-xs text-muted">生活记录</p></div>
         </div>
         <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer"
           className="flex items-center justify-center gap-2 w-full bg-accent hover:bg-accent-hover text-white text-sm font-medium py-2 rounded-md transition-colors">
@@ -46,21 +44,17 @@ export async function Sidebar() {
       </div>
 
       <div className="card-glass p-4 space-y-2">
-        <p className="text-sm font-semibold text-text flex items-center gap-1.5">
-          <span>📢</span> 公告
-        </p>
+        <p className="text-sm font-semibold text-text flex items-center gap-1.5"><span>📢</span> 公告</p>
         <p className="text-xs text-secondary leading-relaxed">即使再小的帆也能远航 ⚠️</p>
       </div>
 
       <div className="card-glass p-4 space-y-3">
-        <p className="text-sm font-semibold text-text flex items-center gap-1.5">
-          <span>🕐</span> 最新文章
-        </p>
+        <p className="text-sm font-semibold text-text flex items-center gap-1.5"><span>🕐</span> 最新文章</p>
         <div className="space-y-2">
           {latestPosts.map(p => (
             <Link key={p.slug} href={`/blog/${p.slug}`}
               className="block text-xs text-secondary hover:text-accent transition-colors truncate">
-              · {p.frontmatter.title}
+              · {p.title}
             </Link>
           ))}
         </div>
