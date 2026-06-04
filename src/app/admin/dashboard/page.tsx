@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
+import fs from 'fs'
+import path from 'path'
 
 export const dynamic = 'force-dynamic'
 
@@ -15,8 +17,14 @@ export default async function DashboardPage() {
     prisma.upload.count(),
   ])
 
+  const projectsDir = path.join(process.cwd(), 'src/content/projects')
+  const projectCount = fs.existsSync(projectsDir)
+    ? fs.readdirSync(projectsDir).filter(f => f.endsWith('.mdx')).length
+    : 0
+
   const stats = [
     { label: '博客文章', value: blogCount },
+    { label: '项目', value: projectCount },
     { label: '生活记录', value: lifeCount },
     { label: '上传文件', value: uploadCount },
   ]
