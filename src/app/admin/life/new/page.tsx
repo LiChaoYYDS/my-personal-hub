@@ -44,7 +44,7 @@ export default function NewLifeRecordPage() {
     <div className="min-h-screen p-8 max-w-xl mx-auto space-y-6">
       <h1 className="text-xl font-semibold">发布动态</h1>
       <form onSubmit={handleSubmit} className="space-y-4">
-        <MarkdownEditor value={content} onChange={setContent} rows={8} />
+        <MarkdownEditor value={content} onChange={setContent} />
 
         <div className="grid grid-cols-2 gap-3">
           <input value={location} onChange={e => setLocation(e.target.value)} placeholder="📍 地点（可选）"

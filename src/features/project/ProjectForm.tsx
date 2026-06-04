@@ -129,7 +129,7 @@ export function ProjectForm({ initial, onSubmit, submitLabel, disableSlug }: Pro
 
       <div className="space-y-1">
         <label className="text-xs text-muted">项目详情（Markdown）</label>
-        <MarkdownEditor value={content} onChange={setContent} rows={12} />
+        <MarkdownEditor value={content} onChange={setContent} />
       </div>
 
       <div className="flex items-center justify-between pt-2">

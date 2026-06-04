@@ -73,7 +73,7 @@ export function PostForm({ initial, onSubmit, submitLabel, disableSlug }: PostFo
 
       <div className="space-y-1">
         <label className="text-xs text-muted">正文（Markdown / MDX）</label>
-        <MarkdownEditor value={content} onChange={setContent} rows={16} />
+        <MarkdownEditor value={content} onChange={setContent} />
       </div>
 
       {/* AI 生成区域 */}
