@@ -49,8 +49,10 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               prose-headings:font-semibold prose-headings:tracking-tight prose-headings:text-text
               prose-p:text-secondary prose-li:text-secondary prose-strong:text-text
               prose-a:text-accent prose-a:no-underline hover:prose-a:underline
-              prose-code:text-sm prose-code:bg-bg-subtle prose-code:px-1 prose-code:rounded
-              prose-pre:bg-bg-subtle prose-pre:border prose-pre:border-border">
+              prose-code:text-sm prose-code:bg-gray-100 prose-code:text-gray-800 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:before:content-none prose-code:after:content-none
+              prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:border-0 prose-pre:shadow-lg
+              dark:prose-code:bg-gray-800 dark:prose-code:text-gray-200
+              dark:prose-pre:bg-gray-950">
               <MDXRemote source={post!.content} components={mdxComponents} />
             </div>
           </div>
