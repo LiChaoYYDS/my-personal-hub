@@ -1,18 +1,19 @@
-import { getAllPosts } from '@/lib/mdx'
+import { prisma } from '@/lib/prisma'
 import { PageTransition } from '@/components/ui/motion'
 import { ArchiveTimeline } from '@/features/blog/ArchiveTimeline'
 import { Sidebar } from '@/components/layout/Sidebar'
 
 export const metadata = { title: '归档', description: '全部文章' }
 
-export default function BlogPage() {
-  const posts = getAllPosts()
-    .filter(p => p.frontmatter.published)
-    .map(p => ({ slug: p.slug, title: p.frontmatter.title, summary: p.frontmatter.summary ?? '', date: p.frontmatter.date }))
+export default async function BlogPage() {
+  const posts = await prisma.blogPost.findMany({
+    where: { published: true },
+    orderBy: { date: 'desc' },
+    select: { slug: true, title: true, summary: true, date: true },
+  })
 
   return (
     <PageTransition>
-      {/* Banner */}
       <div className="relative w-full h-52 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: "url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=1600&auto=format&fit=crop')" }} />
@@ -22,7 +23,6 @@ export default function BlogPage() {
         </div>
       </div>
 
-      {/* 两栏布局 */}
       <div className="mx-auto max-w-6xl px-6 py-6 flex gap-6 items-start">
         <main className="flex-1 min-w-0">
           <ArchiveTimeline posts={posts} />

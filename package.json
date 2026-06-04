@@ -34,6 +34,7 @@
     "zustand": "^4.5.4"
   },
   "devDependencies": {
+    "@prisma/ppg-tunnel": "^0.4.0",
     "@types/bcryptjs": "^2.4.6",
     "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",

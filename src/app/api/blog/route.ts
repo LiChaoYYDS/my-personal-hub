@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server'
-import fs from 'fs'
-import path from 'path'
-import matter from 'gray-matter'
-
-const POSTS_DIR = path.join(process.cwd(), 'src/content/posts')
+import { prisma } from '@/lib/prisma'
 
 const ok = (data: unknown) => NextResponse.json({ success: true, data, message: '' })
 const err = (message: string, status = 400) => NextResponse.json({ success: false, data: null, message }, { status })
 
-// GET /api/blog — 列出所有文章
+// GET /api/blog — 列出所有文章（按日期倒序）
 export async function GET() {
-  const files = fs.readdirSync(POSTS_DIR).filter(f => f.endsWith('.mdx'))
-  const posts = files.map(f => {
-    const raw = fs.readFileSync(path.join(POSTS_DIR, f), 'utf-8')
-    const { data } = matter(raw)
-    return { slug: f.replace('.mdx', ''), ...data }
-  }).sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime())
+  const posts = await prisma.blogPost.findMany({
+    orderBy: { date: 'desc' },
+    select: { slug: true, title: true, date: true, tags: true, category: true, summary: true, published: true },
+  })
   return ok(posts)
 }
 
@@ -24,13 +18,21 @@ export async function POST(req: NextRequest) {
   const { slug, title, date, tags, category, summary, published, content } = await req.json()
   if (!slug || !title || !content) return err('slug, title, content required')
 
-  const filePath = path.join(POSTS_DIR, `${slug}.mdx`)
-  if (fs.existsSync(filePath)) return err('slug already exists')
+  const existing = await prisma.blogPost.findUnique({ where: { slug } })
+  if (existing) return err('slug already exists')
 
-  const frontmatter = matter.stringify('\n' + content, {
-    title, date: date || new Date().toISOString().slice(0, 10),
-    tags: tags || [], category: category || '', summary: summary || '', published: published ?? false,
+  const post = await prisma.blogPost.create({
+    data: {
+      slug,
+      title,
+      content,
+      tags: tags || [],
+      category: category || '',
+      summary: summary || '',
+      published: published ?? false,
+      date: date ? new Date(date) : new Date(),
+    },
   })
-  fs.writeFileSync(filePath, frontmatter, 'utf-8')
-  return ok({ slug })
+
+  return ok({ slug: post.slug })
 }
