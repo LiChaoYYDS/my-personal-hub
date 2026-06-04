@@ -34,7 +34,7 @@ export default function AboutPage() {
         <FadeUp delay={0.05}>
           <div className="card-glass p-6 space-y-4 text-sm leading-relaxed text-secondary">
             <p>
-              你好，我是 <span className="text-text font-semibold">Your Name</span>，一名 AI 工程师与全栈开发者。
+              你好，我是 <span className="text-text font-semibold">Chao</span>，一名 AI 工程师与全栈开发者。
               我热衷于将前沿 AI 技术转化为实际可用的产品，构建那些让生活和工作更高效的工具。
             </p>
             <p>
@@ -95,7 +95,7 @@ export default function AboutPage() {
                 className="group/link inline-flex items-center gap-3 text-sm text-secondary hover:text-accent transition-colors w-fit">
                 <span className="text-base">✉️</span>
                 <span className="relative">
-                  you@example.com
+                  2325052506@qq.com
                   <span className="absolute bottom-0 left-0 w-0 h-px bg-accent group-hover/link:w-full transition-all duration-200" />
                 </span>
               </a>
@@ -103,7 +103,7 @@ export default function AboutPage() {
                 className="group/link inline-flex items-center gap-3 text-sm text-secondary hover:text-accent transition-colors w-fit">
                 <span className="text-base">🐙</span>
                 <span className="relative">
-                  github.com/yourusername
+                  github.com/LiChaoYYDS
                   <span className="absolute bottom-0 left-0 w-0 h-px bg-accent group-hover/link:w-full transition-all duration-200" />
                 </span>
               </a>
