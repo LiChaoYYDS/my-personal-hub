@@ -2,26 +2,21 @@ import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { getSession } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import fs from 'fs'
-import path from 'path'
+
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const session = await getSession()
   if (!session) redirect('/admin/login')
 
-  const [lifeCount, uploadCount] = await Promise.all([
+  const [blogCount, lifeCount, uploadCount] = await Promise.all([
+    prisma.blogPost.count(),
     prisma.lifeRecord.count(),
     prisma.upload.count(),
   ])
 
-  const postsDir = path.join(process.cwd(), 'src/content/posts')
-  const projectsDir = path.join(process.cwd(), 'src/content/projects')
-  const blogCount = fs.existsSync(postsDir) ? fs.readdirSync(postsDir).filter(f => f.endsWith('.mdx')).length : 0
-  const projectCount = fs.existsSync(projectsDir) ? fs.readdirSync(projectsDir).filter(f => f.endsWith('.mdx')).length : 0
-
   const stats = [
     { label: '博客文章', value: blogCount },
-    { label: '项目', value: projectCount },
     { label: '生活记录', value: lifeCount },
     { label: '上传文件', value: uploadCount },
   ]
