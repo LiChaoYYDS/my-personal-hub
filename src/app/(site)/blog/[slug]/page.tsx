@@ -8,11 +8,6 @@ import { mdxComponents } from '@/features/blog/mdxComponents'
 import { Sidebar } from '@/components/layout/Sidebar'
 
 export const dynamic = 'force-dynamic'
-export const dynamicParams = true
-
-export async function generateStaticParams() {
-  return []
-}
 
 export async function generateMetadata({ params }: { params: { slug: string } }) {
   const post = await prisma.blogPost.findUnique({ where: { slug: params.slug } })
@@ -36,16 +31,12 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           style={{ backgroundImage: `url('${cover}')` }} />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-6">
-          <h1 className="text-2xl font-bold drop-shadow-md max-w-3xl leading-snug">
-            {post!.title}
-          </h1>
+          <h1 className="text-2xl font-bold drop-shadow-md max-w-3xl leading-snug">{post!.title}</h1>
           <p className="mt-2 text-sm text-white/80 flex items-center gap-3 flex-wrap justify-center">
             <span>📅 发表于 {dateStr}</span>
             <span>·</span>
             <span>{readTime}</span>
-            {post!.tags[0] && (
-              <><span>·</span><span>📁 {post!.tags[0]}</span></>
-            )}
+            {post!.tags[0] && <><span>·</span><span>📁 {post!.tags[0]}</span></>}
           </p>
         </div>
       </div>
