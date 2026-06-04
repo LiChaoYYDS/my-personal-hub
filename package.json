@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
-    "start": "prisma generate && prisma migrate deploy && npx tsx scripts/create-admin.ts && next start",
+    "build": "prisma generate && prisma migrate deploy && next build",
+    "start": "npx tsx scripts/create-admin.ts && next start",
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
