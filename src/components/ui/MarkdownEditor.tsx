@@ -1,9 +1,14 @@
 'use client'
+import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
-import '@uiw/react-md-editor/markdown-editor.css'
-import '@uiw/react-markdown-preview/markdown.css'
+import type { BytemdPlugin } from 'bytemd'
+import 'bytemd/dist/index.css'
+import 'highlight.js/styles/github.css'
 
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false })
+const Editor = dynamic(
+  () => import('@bytemd/react').then(m => m.Editor),
+  { ssr: false, loading: () => <div className="bg-gray-50 rounded-xl border border-border animate-pulse" style={{ height: 520 }} /> }
+)
 
 interface Props {
   value: string
@@ -12,16 +17,18 @@ interface Props {
 }
 
 export function MarkdownEditor({ value, onChange, height = 520 }: Props) {
+  const [plugins, setPlugins] = useState<BytemdPlugin[]>([])
+
+  useEffect(() => {
+    Promise.all([
+      import('@bytemd/plugin-gfm').then(m => m.default()),
+      import('@bytemd/plugin-highlight').then(m => m.default()),
+    ]).then(setPlugins)
+  }, [])
+
   return (
-    <div data-color-mode="light" className="md-editor-wrapper">
-      <MDEditor
-        value={value}
-        onChange={v => onChange(v ?? '')}
-        height={height}
-        preview="live"
-        hideToolbar={false}
-        visibleDragbar={false}
-      />
+    <div style={{ height }} className="bytemd-wrapper rounded-xl overflow-hidden border border-border shadow-sm">
+      <Editor value={value} onChange={onChange} plugins={plugins} />
     </div>
   )
 }
