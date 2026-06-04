@@ -1,11 +1,21 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
+import rehypePrettyCode from 'rehype-pretty-code'
 import { prisma } from '@/lib/prisma'
 import { extractHeadings } from '@/lib/mdx'
 import readingTime from 'reading-time'
 import { TableOfContents } from '@/features/blog/TableOfContents'
 import { mdxComponents } from '@/features/blog/mdxComponents'
 import { Sidebar } from '@/components/layout/Sidebar'
+
+const mdxOptions = {
+  rehypePlugins: [
+    [rehypePrettyCode, {
+      theme: { light: 'github-light', dark: 'github-dark' },
+      keepBackground: false,
+    }],
+  ],
+} as any
 
 export const dynamic = 'force-dynamic'
 
@@ -53,7 +63,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
               prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:border-0 prose-pre:shadow-lg
               dark:prose-code:bg-gray-800 dark:prose-code:text-gray-200
               dark:prose-pre:bg-gray-950">
-              <MDXRemote source={post!.content} components={mdxComponents} />
+              <MDXRemote source={post!.content} components={mdxComponents} options={{ mdxOptions }} />
             </div>
           </div>
         </main>
