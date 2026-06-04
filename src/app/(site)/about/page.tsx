@@ -4,16 +4,15 @@ import { PageTransition, FadeUp, StaggerList, StaggerItem } from '@/components/u
 export const metadata = { title: 'About', description: '关于我' }
 
 const EXPERIENCE = [
-  { year: '2024–至今', role: 'AI Engineer', desc: '专注于 LLM 应用开发、AI 系统架构与全栈产品落地。' },
-  { year: '2022–2024', role: 'Full Stack Developer', desc: '负责多个 SaaS 产品的前后端开发，主导技术选型与架构设计。' },
-  { year: '2020–2022', role: 'Frontend Developer', desc: '构建 React/Next.js 应用，深入实践组件化设计与性能优化。' },
+  { year: '2024-12 ~ 2025-06', role: '前端开发', desc: 'Web项目开发与维护，负责页面功能开发、接口联调及基础组件封装工作。' },
+  { year: '2026-01 ~ 2026-06', role: '低代码开发', desc: '负责医院人事系统与排班考勤功能模块开发。' },
 ]
 
 const SKILLS = [
-  { label: '前端', tags: ['React', 'Next.js', 'TypeScript', 'TailwindCSS', 'Framer Motion'] },
+  { label: '前端', tags: ['Vue', 'Next.js', 'TypeScript', 'TailwindCSS', 'Framer Motion'] },
   { label: '后端', tags: ['Node.js', 'Python', 'PostgreSQL', 'Prisma', 'Redis'] },
   { label: 'AI / LLM', tags: ['Claude API', 'OpenAI', 'LangChain', 'RAG', 'Prompt Engineering'] },
-  { label: '工具链', tags: ['Docker', 'Nginx', 'Git', 'Vercel', 'AWS'] },
+  { label: '工具链', tags: ['Docker', 'Nginx', 'Git'] },
 ]
 
 export default function AboutPage() {
@@ -91,7 +90,7 @@ export default function AboutPage() {
           <div className="space-y-4">
             <h2 className="text-xs uppercase tracking-widest text-muted">Contact</h2>
             <div className="flex flex-col gap-3">
-              <a href="mailto:you@example.com"
+              <a href="mailto:2325052506@qq.com"
                 className="group/link inline-flex items-center gap-3 text-sm text-secondary hover:text-accent transition-colors w-fit">
                 <span className="text-base">✉️</span>
                 <span className="relative">
@@ -99,7 +98,7 @@ export default function AboutPage() {
                   <span className="absolute bottom-0 left-0 w-0 h-px bg-accent group-hover/link:w-full transition-all duration-200" />
                 </span>
               </a>
-              <a href="https://github.com/yourusername" target="_blank" rel="noopener noreferrer"
+              <a href="https://github.com/LiChaoYYDS" target="_blank" rel="noopener noreferrer"
                 className="group/link inline-flex items-center gap-3 text-sm text-secondary hover:text-accent transition-colors w-fit">
                 <span className="text-base">🐙</span>
                 <span className="relative">
