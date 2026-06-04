@@ -1,3 +1,5 @@
+﻿export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import { getAllProjects } from '@/lib/mdx'
 import { PageTransition } from '@/components/ui/motion'

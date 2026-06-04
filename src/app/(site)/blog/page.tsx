@@ -1,3 +1,5 @@
+﻿export const dynamic = 'force-dynamic'
+
 import { prisma } from '@/lib/prisma'
 import { PageTransition } from '@/components/ui/motion'
 import { ArchiveTimeline } from '@/features/blog/ArchiveTimeline'
