@@ -11,8 +11,8 @@ import { Sidebar } from '@/components/layout/Sidebar'
 const mdxOptions = {
   rehypePlugins: [
     [rehypePrettyCode, {
-      theme: { light: 'github-light', dark: 'github-dark' },
-      keepBackground: false,
+      theme: 'one-dark-pro',
+      keepBackground: true,
     }],
   ],
 } as any
