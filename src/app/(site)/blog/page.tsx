@@ -12,6 +12,14 @@ export default async function BlogPage() {
     select: { slug: true, title: true, summary: true, date: true },
   })
 
+  // date 转成 string 以匹配 ArchiveTimeline 的 Post 接口
+  const rows = posts.map(p => ({
+    slug: p.slug,
+    title: p.title,
+    summary: p.summary,
+    date: p.date.toISOString().slice(0, 10),
+  }))
+
   return (
     <PageTransition>
       <div className="relative w-full h-52 overflow-hidden">
@@ -25,7 +33,7 @@ export default async function BlogPage() {
 
       <div className="mx-auto max-w-6xl px-6 py-6 flex gap-6 items-start">
         <main className="flex-1 min-w-0">
-          <ArchiveTimeline posts={posts} />
+          <ArchiveTimeline posts={rows} />
         </main>
         <Sidebar />
       </div>
