@@ -6,7 +6,6 @@ import { extractHeadings } from '@/lib/mdx'
 import readingTime from 'reading-time'
 import { TableOfContents } from '@/features/blog/TableOfContents'
 import { mdxComponents } from '@/features/blog/mdxComponents'
-import { Sidebar } from '@/components/layout/Sidebar'
 
 const mdxOptions = {
   rehypePlugins: [
@@ -61,8 +60,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
           </div>
         </main>
 
-        <div className="w-72 shrink-0 space-y-4 sticky top-20">
-          <Sidebar />
+        <div className="w-64 shrink-0 sticky top-20 space-y-4">
           {headings.length > 0 && (
             <div className="card-glass p-4">
               <TableOfContents headings={headings} />

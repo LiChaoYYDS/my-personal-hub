@@ -39,10 +39,10 @@ export function getAllPosts() {
 }
 
 export function extractHeadings(content: string) {
-  const matches = content.matchAll(/^(#{2,3})\s+(.+)$/gm)
+  const matches = content.matchAll(/^(#{1,4})\s+(.+)$/gm)
   return Array.from(matches).map(m => ({
     level: m[1].length,
-    text: m[2],
+    text: m[2].replace(/\*\*|__|\*|_|`/g, ''),
     id: m[2].toLowerCase().replace(/[^\w一-龥]+/g, '-').replace(/^-|-$/g, ''),
   }))
 }
