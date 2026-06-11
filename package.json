@@ -1,11 +1,11 @@
-{
+﻿{
   "name": "personal-hub",
   "version": "0.1.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && prisma migrate deploy && next build",
-    "start": "npx tsx scripts/create-admin.ts && next start",
+    "start": "npx tsx scripts/create-admin.ts && npx tsx scripts/seed-projects.ts && next start",
     "lint": "next lint",
     "db:push": "prisma db push",
     "db:migrate": "prisma migrate dev",
@@ -52,3 +52,4 @@
     "typescript": "^5.5.3"
   }
 }
+

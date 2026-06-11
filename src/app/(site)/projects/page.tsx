@@ -1,4 +1,3 @@
-import { getAllProjects } from '@/lib/mdx'
 import { Container } from '@/components/layout/Container'
 import { PageTransition, FadeUp } from '@/components/ui/motion'
 import { ProjectCards } from '@/features/project/ProjectCards'
@@ -6,13 +5,34 @@ import type { ProjectFrontmatter } from '@/types'
 
 export const metadata = { title: 'Projects', description: '项目展示' }
 
-export default function ProjectsPage() {
-  let projects: ReturnType<typeof getAllProjects> = []
-  try { projects = getAllProjects() } catch { projects = [] }
+async function getProjects(): Promise<{ slug: string; frontmatter: ProjectFrontmatter }[]> {
+  try {
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const res = await fetch(base + '/api/projects', { cache: 'no-store' })
+    const json = await res.json()
+    if (!json.success) return []
+    return json.data
+      .filter((p: any) => p.published !== false)
+      .map((p: any) => ({
+        slug: p.slug,
+        frontmatter: {
+          title: p.title,
+          description: p.description,
+          tech: p.tech,
+          github: p.github,
+          demo: p.demo,
+          published: p.published,
+          year: p.year || '',
+          group: p.groupText || '其他',
+          icon: p.icon || '',
+          attachments: p.attachments ? JSON.parse(p.attachments) : [],
+        } as ProjectFrontmatter,
+      }))
+  } catch { return [] }
+}
 
-  const published = projects
-    .filter(p => (p.frontmatter as ProjectFrontmatter).published !== false)
-    .map(p => ({ slug: p.slug, frontmatter: p.frontmatter as ProjectFrontmatter }))
+export default async function ProjectsPage() {
+  const published = await getProjects()
 
   return (
     <PageTransition>

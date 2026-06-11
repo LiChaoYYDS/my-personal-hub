@@ -1,27 +1,47 @@
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
-import { getAllProjects, getProjectBySlug } from '@/lib/mdx'
 import { Container } from '@/components/layout/Container'
 import { mdxComponents } from '@/features/blog/mdxComponents'
 import type { ProjectFrontmatter } from '@/types'
 
-export async function generateStaticParams() {
-  try { return getAllProjects().map(p => ({ slug: p.slug })) } catch { return [] }
-}
+interface Props { params: { slug: string } }
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
+async function getProject(slug: string): Promise<{ frontmatter: ProjectFrontmatter; content: string } | null> {
   try {
-    const p = getProjectBySlug(params.slug)
-    const fm = p.frontmatter as ProjectFrontmatter
-    return { title: fm.title, description: fm.description }
-  } catch { return {} }
+    const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
+    const res = await fetch(base + '/api/projects/' + slug, { cache: 'no-store' })
+    const json = await res.json()
+    if (!json.success) return null
+    const p = json.data
+    return {
+      frontmatter: {
+        title: p.title,
+        description: p.description,
+        tech: p.tech,
+        github: p.github,
+        demo: p.demo,
+        published: p.published,
+        year: p.year || '',
+        group: p.groupText || '其他',
+        icon: p.icon || '',
+        attachments: p.attachments ? JSON.parse(p.attachments) : [],
+      },
+      content: p.content,
+    }
+  } catch { return null }
 }
 
-export default function ProjectPage({ params }: { params: { slug: string } }) {
-  let project: ReturnType<typeof getProjectBySlug>
-  try { project = getProjectBySlug(params.slug) } catch { notFound() }
+export async function generateMetadata({ params }: Props) {
+  const project = await getProject(params.slug)
+  if (!project) return {}
+  return { title: project.frontmatter.title, description: project.frontmatter.description }
+}
 
-  const fm = project!.frontmatter as ProjectFrontmatter
+export default async function ProjectPage({ params }: Props) {
+  const project = await getProject(params.slug)
+  if (!project) notFound()
+
+  const fm = project.frontmatter
 
   return (
     <Container className="py-16 space-y-10">
@@ -44,12 +64,11 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
           )}
         </div>
 
-        {/* 项目附件 */}
         {fm.attachments && fm.attachments.length > 0 && (
           <div className="space-y-2 pt-2">
             <p className="text-xs text-muted uppercase tracking-widest">项目附件</p>
             <div className="flex flex-wrap gap-2">
-              {fm.attachments.map((f, i) => (
+              {fm.attachments.map((f: any, i: number) => (
                 <a key={i} href={f.url} download={f.name} target="_blank" rel="noopener noreferrer"
                   className="flex items-center gap-2 text-xs border border-border rounded-md px-3 py-1.5 hover:border-accent hover:text-accent transition-colors">
                   <span>📎</span>
@@ -67,7 +86,7 @@ export default function ProjectPage({ params }: { params: { slug: string } }) {
         prose-headings:font-semibold prose-a:text-accent prose-a:no-underline hover:prose-a:underline
         prose-code:bg-bg-subtle prose-code:px-1 prose-code:rounded
         prose-pre:bg-bg-subtle prose-pre:border prose-pre:border-border">
-        <MDXRemote source={project!.content} components={mdxComponents} />
+        <MDXRemote source={project.content} components={mdxComponents} />
       </div>
     </Container>
   )
