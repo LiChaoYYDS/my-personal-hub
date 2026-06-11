@@ -14,6 +14,15 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return { title: p.title, description: p.description }
 }
 
+async function renderContent(content: string) {
+  try {
+    return <MDXRemote source={content} components={mdxComponents} />
+  } catch {
+    // MDX 解析失败时，降级为纯文本显示
+    return <pre className="whitespace-pre-wrap text-sm text-secondary leading-relaxed">{content}</pre>
+  }
+}
+
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const slug = decodeURIComponent(params.slug)
   const p = await prisma.project.findUnique({ where: { slug } })
@@ -30,6 +39,8 @@ export default async function ProjectPage({ params }: { params: { slug: string }
     group: p!.groupText,
     icon: p!.icon,
   }
+
+  const contentEl = p!.content?.trim() ? await renderContent(p!.content) : null
 
   return (
     <Container className="py-16 space-y-10">
@@ -53,11 +64,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
         </div>
       </header>
 
-      {p!.content && (
-        <div className="article-body">
-          <MDXRemote source={p!.content} components={mdxComponents} />
-        </div>
-      )}
+      {contentEl && <div className="article-body">{contentEl}</div>}
     </Container>
   )
 }
