@@ -1,9 +1,9 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { notFound } from 'next/navigation'
-import { Container } from '@/components/layout/Container'
 import { prisma } from '@/lib/prisma'
-import type { ProjectFrontmatter } from '@/types'
+import { extractHeadings } from '@/lib/mdx'
+import { TableOfContents } from '@/features/blog/TableOfContents'
 
 export const dynamic = 'force-dynamic'
 
@@ -19,35 +19,68 @@ export default async function ProjectPage({ params }: { params: { slug: string }
   const p = await prisma.project.findUnique({ where: { slug } })
   if (!p) notFound()
 
-  return (
-    <Container className="py-16 space-y-10">
-      <header className="space-y-4 pb-8 border-b border-border">
-        <h1 className="text-3xl font-semibold tracking-tight">{p.title}</h1>
-        <p className="text-secondary text-sm leading-relaxed">{p.description}</p>
-        <div className="flex flex-wrap gap-2">
-          {p.tech?.map(t => (
-            <span key={t} className="text-xs text-muted border border-border rounded-sm px-2 py-0.5">{t}</span>
-          ))}
-        </div>
-        <div className="flex gap-4 pt-1">
-          {p.github && (
-            <a href={p.github} target="_blank" rel="noopener noreferrer"
-              className="text-sm text-secondary hover:text-accent transition-colors">GitHub →</a>
-          )}
-          {p.demo && (
-            <a href={p.demo} target="_blank" rel="noopener noreferrer"
-              className="text-sm text-secondary hover:text-accent transition-colors">在线预览 →</a>
-          )}
-        </div>
-      </header>
+  const headings = extractHeadings(p.content ?? '')
 
-      {p.content?.trim() && (
-        <div className="article-body">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {p.content}
-          </ReactMarkdown>
+  return (
+    <>
+      {/* 顶部封面 Banner */}
+      <div className="relative w-full h-52 overflow-hidden">
+        <div className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('https://picsum.photos/seed/${encodeURIComponent(slug)}-proj/1600/400')` }} />
+        <div className="absolute inset-0 bg-black/40" />
+        <div className="absolute inset-0 flex flex-col items-center justify-center text-white text-center px-6">
+          {p.icon && <span className="text-4xl mb-2">{p.icon}</span>}
+          <h1 className="text-2xl font-bold drop-shadow-md max-w-3xl leading-snug">{p.title}</h1>
+          <p className="mt-2 text-sm text-white/80 flex items-center gap-3 flex-wrap justify-center">
+            {p.year && <span>📅 {p.year}</span>}
+            {p.groupText && <><span>·</span><span>📁 {p.groupText}</span></>}
+            {p.github && <><span>·</span>
+              <a href={p.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
+            </>}
+            {p.demo && <><span>·</span>
+              <a href={p.demo} target="_blank" rel="noopener noreferrer" className="hover:underline">Demo →</a>
+            </>}
+          </p>
         </div>
-      )}
-    </Container>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-6 flex gap-6 items-start">
+        <main className="flex-1 min-w-0">
+          <div className="card-glass p-8 space-y-6">
+            {/* 技术栈 */}
+            {p.tech?.length > 0 && (
+              <div className="flex flex-wrap gap-2 pb-4 border-b border-border">
+                {p.tech.map(t => (
+                  <span key={t} className="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full px-3 py-1">{t}</span>
+                ))}
+              </div>
+            )}
+
+            {/* 描述 */}
+            {p.description && (
+              <p className="text-secondary text-sm leading-relaxed">{p.description}</p>
+            )}
+
+            {/* Markdown 内容 */}
+            {p.content?.trim() && (
+              <div className="article-body">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {p.content}
+                </ReactMarkdown>
+              </div>
+            )}
+          </div>
+        </main>
+
+        {/* 右侧目录 */}
+        <div className="w-64 shrink-0 sticky top-20 space-y-4">
+          {headings.length > 0 && (
+            <div className="card-glass p-4">
+              <TableOfContents headings={headings} />
+            </div>
+          )}
+        </div>
+      </div>
+    </>
   )
 }
