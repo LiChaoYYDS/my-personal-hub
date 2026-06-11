@@ -1,38 +1,32 @@
 import { Container } from '@/components/layout/Container'
 import { PageTransition, FadeUp } from '@/components/ui/motion'
 import { ProjectCards } from '@/features/project/ProjectCards'
+import { prisma } from '@/lib/prisma'
 import type { ProjectFrontmatter } from '@/types'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Projects', description: '项目展示' }
 
-async function getProjects(): Promise<{ slug: string; frontmatter: ProjectFrontmatter }[]> {
-  try {
-    const base = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000'
-    const res = await fetch(base + '/api/projects', { cache: 'no-store' })
-    const json = await res.json()
-    if (!json.success) return []
-    return json.data
-      .filter((p: any) => p.published !== false)
-      .map((p: any) => ({
-        slug: p.slug,
-        frontmatter: {
-          title: p.title,
-          description: p.description,
-          tech: p.tech,
-          github: p.github,
-          demo: p.demo,
-          published: p.published,
-          year: p.year || '',
-          group: p.groupText || '其他',
-          icon: p.icon || '',
-          attachments: p.attachments ? JSON.parse(p.attachments) : [],
-        } as ProjectFrontmatter,
-      }))
-  } catch { return [] }
-}
-
 export default async function ProjectsPage() {
-  const published = await getProjects()
+  const rows = await prisma.project.findMany({
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+  })
+
+  const projects = rows.map(p => ({
+    slug: p.slug,
+    frontmatter: {
+      title: p.title,
+      description: p.description,
+      tech: p.tech,
+      github: p.github,
+      demo: p.demo,
+      published: p.published,
+      year: p.year,
+      group: p.groupText,
+      icon: p.icon,
+    } as ProjectFrontmatter,
+  }))
 
   return (
     <PageTransition>
@@ -43,7 +37,7 @@ export default async function ProjectsPage() {
             <p className="text-secondary text-sm">我做过的东西。</p>
           </div>
         </FadeUp>
-        <ProjectCards projects={published} />
+        <ProjectCards projects={projects} />
       </Container>
     </PageTransition>
   )
