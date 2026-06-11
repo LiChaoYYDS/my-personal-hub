@@ -1,4 +1,4 @@
-﻿-- CreateTable
+-- CreateTable
 CREATE TABLE "Project" (
     "id" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
