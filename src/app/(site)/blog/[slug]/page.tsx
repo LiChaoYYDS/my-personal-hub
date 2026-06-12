@@ -1,10 +1,17 @@
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
+import rehypePrettyCode from 'rehype-pretty-code'
 import { prisma } from '@/lib/prisma'
 import { extractHeadings } from '@/lib/mdx'
 import readingTime from 'reading-time'
 import { TableOfContents } from '@/features/blog/TableOfContents'
+import { mdxComponents } from '@/features/blog/mdxComponents'
+
+const mdxOptions = {
+  rehypePlugins: [
+    [rehypePrettyCode, { theme: 'one-dark-pro', keepBackground: true }],
+  ],
+} as any
 
 export const dynamic = 'force-dynamic'
 
@@ -45,9 +52,7 @@ export default async function BlogPostPage({ params }: { params: { slug: string 
         <main className="flex-1 min-w-0">
           <div className="card-glass p-8">
             <div className="article-body">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                {post!.content}
-              </ReactMarkdown>
+              <MDXRemote source={post!.content} components={mdxComponents} options={{ mdxOptions }} />
             </div>
           </div>
         </main>
