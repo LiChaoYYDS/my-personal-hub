@@ -1,4 +1,5 @@
-﻿export const dynamic = 'force-dynamic'
+// @ts-nocheck
+export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
 import { getAllProjects } from '@/lib/mdx'

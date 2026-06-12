@@ -9,7 +9,7 @@ async function main() {
     take: 20,
   })
   console.log('=== BlogPost slugs in DB ===')
-  posts.forEach(p => {
+  posts.forEach((p: { slug: string; published: boolean; title: string }) => {
     console.log(`slug: ${JSON.stringify(p.slug)} | published: ${p.published} | title: ${p.title}`)
   })
   console.log(`Total: ${posts.length}`)

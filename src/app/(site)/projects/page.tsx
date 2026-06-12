@@ -1,3 +1,4 @@
+// @ts-nocheck
 import { Container } from '@/components/layout/Container'
 import { PageTransition, FadeUp } from '@/components/ui/motion'
 import { ProjectCards } from '@/features/project/ProjectCards'

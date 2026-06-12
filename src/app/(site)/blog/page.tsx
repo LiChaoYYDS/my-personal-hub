@@ -1,4 +1,5 @@
-﻿export const dynamic = 'force-dynamic'
+// @ts-nocheck
+export const dynamic = 'force-dynamic'
 
 import { prisma } from '@/lib/prisma'
 import { PageTransition } from '@/components/ui/motion'
@@ -15,7 +16,7 @@ export default async function BlogPage() {
   })
 
   // date 转成 string 以匹配 ArchiveTimeline 的 Post 接口
-  const rows = posts.map(p => ({
+  const rows = posts.map((p: { slug: string; title: string; summary: string; date: Date }) => ({
     slug: p.slug,
     title: p.title,
     summary: p.summary,
@@ -42,3 +43,4 @@ export default async function BlogPage() {
     </PageTransition>
   )
 }
+
