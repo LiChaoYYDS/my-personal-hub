@@ -37,6 +37,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
   const p = await prisma.project.findUnique({ where: { slug } })
   if (!p) notFound()
 
+  const tech = Array.isArray(p.tech) ? p.tech : []
   const headings = extractHeadings(p.content ?? '')
   const attachments: { name: string; url: string; size?: number }[] = (() => {
     try { return JSON.parse(p.attachments || '[]') } catch { return [] }
@@ -71,9 +72,9 @@ export default async function ProjectPage({ params }: { params: { slug: string }
         <main className="flex-1 min-w-0 space-y-4">
           <div className="card-glass p-8 space-y-6">
             {/* 技术栈 */}
-            {p.tech?.length > 0 && (
+            {tech.length > 0 && (
               <div className="flex flex-wrap gap-2 pb-5 border-b border-border">
-                {p.tech.map(t => (
+                {tech.map(t => (
                   <span key={t} className="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full px-3 py-1">{t}</span>
                 ))}
               </div>
