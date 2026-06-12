@@ -1,16 +1,18 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 interface Heading { id: string; text: string; level: number }
 
 export function TableOfContents({ headings }: { headings: Heading[] }) {
   const [active, setActive] = useState('')
+  const ignoreObserver = useRef(false)
 
   useEffect(() => {
     const els = document.querySelectorAll('h1[id],h2[id],h3[id],h4[id]')
     if (!els.length) return
     const observer = new IntersectionObserver(
       entries => {
+        if (ignoreObserver.current) return
         for (const e of entries) {
           if (e.isIntersecting) { setActive(e.target.id); break }
         }
@@ -24,14 +26,17 @@ export function TableOfContents({ headings }: { headings: Heading[] }) {
   if (!headings.length) return null
 
   const indent: Record<number, string> = { 1: '', 2: '', 3: 'pl-3', 4: 'pl-6' }
-  const size:   Record<number, string> = { 1: 'text-xs font-semibold', 2: 'text-xs font-medium', 3: 'text-xs', 4: 'text-[11px]' }
+  const size: Record<number, string> = { 1: 'text-xs font-semibold', 2: 'text-xs font-medium', 3: 'text-xs', 4: 'text-[11px]' }
 
   function handleClick(e: React.MouseEvent<HTMLAnchorElement>, id: string) {
     e.preventDefault()
     const el = document.getElementById(id)
     if (!el) return
-    window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' })
     setActive(id)
+    ignoreObserver.current = true
+    window.scrollTo({ top: el.offsetTop - 80, behavior: 'smooth' })
+    // 滚动动画约 600ms，结束后重新交给 Observer
+    setTimeout(() => { ignoreObserver.current = false }, 800)
   }
 
   return (
