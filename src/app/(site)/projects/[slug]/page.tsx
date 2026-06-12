@@ -38,9 +38,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
   if (!p) notFound()
 
   const tech = Array.isArray(p.tech) ? p.tech : []
-  const headings = extractHeadings(p.content ?? '')
+  const rawHeadings = extractHeadings(p.content ?? '')
+  const headings = Array.isArray(rawHeadings) ? rawHeadings : []
   const attachments: { name: string; url: string; size?: number }[] = (() => {
-    try { return JSON.parse(p.attachments || '[]') } catch { return [] }
+    try {
+      const parsed = JSON.parse(p.attachments || '[]')
+      return Array.isArray(parsed) ? parsed : []
+    } catch { return [] }
   })()
 
   const contentEl = p.content?.trim() ? await renderContent(p.content) : null
