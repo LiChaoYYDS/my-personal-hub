@@ -10,6 +10,8 @@ const mdxOptions = {
   rehypePlugins: [
     [rehypePrettyCode, { theme: 'one-dark-pro', keepBackground: true }],
   ],
+  // 关闭 JSX/表达式解析，允许普通 Markdown 中的 {} <> 等字符
+  format: 'md',
 } as any
 
 export const dynamic = 'force-dynamic'
