@@ -54,17 +54,17 @@ export default async function ProjectPage({ params }: { params: { slug: string }
       <div className="mx-auto max-w-6xl px-6 py-6 flex gap-6 items-start">
         <main className="flex-1 min-w-0 space-y-4">
           <div className="card-glass p-8 space-y-6">
-            {tech.length > 0 && (
-              <div className="flex flex-wrap gap-2 pb-5 border-b border-border">
-                {tech.map(t => (
-                  <span key={t} className="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full px-3 py-1">{t}</span>
-                ))}
-              </div>
-            )}
             {p.description && <p className="text-secondary text-sm leading-relaxed">{p.description}</p>}
             {content.trim() && (
               <div className="article-body">
                 <ProjectMarkdown content={content} />
+              </div>
+            )}
+            {tech.length > 0 && (
+              <div className="flex flex-wrap gap-2 pt-5 border-t border-border">
+                {tech.map(t => (
+                  <span key={t} className="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full px-3 py-1">{t}</span>
+                ))}
               </div>
             )}
           </div>
