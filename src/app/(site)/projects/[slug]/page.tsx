@@ -1,18 +1,8 @@
-import { MDXRemote } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
-import rehypePrettyCode from 'rehype-pretty-code'
 import { prisma } from '@/lib/prisma'
 import { extractHeadings } from '@/lib/mdx'
 import { TableOfContents } from '@/features/blog/TableOfContents'
-import { mdxComponents } from '@/features/blog/mdxComponents'
-
-const mdxOptions = {
-  rehypePlugins: [
-    [rehypePrettyCode, { theme: 'one-dark-pro', keepBackground: true }],
-  ],
-  // 关闭 JSX/表达式解析，允许普通 Markdown 中的 {} <> 等字符
-  format: 'md',
-} as any
+import { ProjectMarkdown } from '@/features/project/ProjectMarkdown'
 
 export const dynamic = 'force-dynamic'
 
@@ -23,35 +13,24 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return { title: p.title, description: p.description }
 }
 
-async function renderContent(content: string) {
-  try {
-    return <MDXRemote source={content} components={mdxComponents} options={{ mdxOptions }} />
-  } catch {
-    // MDX 解析失败降级为纯文本
-    return <pre className="whitespace-pre-wrap text-sm text-secondary leading-relaxed">{content}</pre>
-  }
-}
-
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const slug = decodeURIComponent(params.slug)
   const p = await prisma.project.findUnique({ where: { slug } })
   if (!p) notFound()
 
-  const tech = Array.isArray(p.tech) ? p.tech : []
-  const rawHeadings = extractHeadings(p.content ?? '')
-  const headings = Array.isArray(rawHeadings) ? rawHeadings : []
+  const content = typeof p.content === 'string' ? p.content : ''
+  const tech: string[] = Array.isArray(p.tech) ? p.tech : []
+  const headings = extractHeadings(content)
   const attachments: { name: string; url: string; size?: number }[] = (() => {
     try {
-      const parsed = JSON.parse(p.attachments || '[]')
-      return Array.isArray(parsed) ? parsed : []
+      const v = JSON.parse(typeof p.attachments === 'string' ? p.attachments : '[]')
+      return Array.isArray(v) ? v : []
     } catch { return [] }
   })()
 
-  const contentEl = p.content?.trim() ? await renderContent(p.content) : null
-
   return (
     <>
-      {/* 顶部封面 Banner */}
+      {/* Banner */}
       <div className="relative w-full h-52 overflow-hidden">
         <div className="absolute inset-0 bg-cover bg-center"
           style={{ backgroundImage: `url('https://picsum.photos/seed/${encodeURIComponent(slug)}-proj/1600/400')` }} />
@@ -75,7 +54,6 @@ export default async function ProjectPage({ params }: { params: { slug: string }
       <div className="mx-auto max-w-6xl px-6 py-6 flex gap-6 items-start">
         <main className="flex-1 min-w-0 space-y-4">
           <div className="card-glass p-8 space-y-6">
-            {/* 技术栈 */}
             {tech.length > 0 && (
               <div className="flex flex-wrap gap-2 pb-5 border-b border-border">
                 {tech.map(t => (
@@ -83,22 +61,17 @@ export default async function ProjectPage({ params }: { params: { slug: string }
                 ))}
               </div>
             )}
-
-            {/* 描述 */}
-            {p.description && (
-              <p className="text-secondary text-sm leading-relaxed">{p.description}</p>
+            {p.description && <p className="text-secondary text-sm leading-relaxed">{p.description}</p>}
+            {content.trim() && (
+              <div className="article-body">
+                <ProjectMarkdown content={content} />
+              </div>
             )}
-
-            {/* Markdown 内容（与博客相同样式） */}
-            {contentEl && <div className="article-body">{contentEl}</div>}
           </div>
 
-          {/* 附件下载 */}
           {attachments.length > 0 && (
             <div className="card-glass p-6 space-y-3">
-              <p className="text-sm font-semibold text-text flex items-center gap-1.5">
-                <span>📎</span> 项目附件
-              </p>
+              <p className="text-sm font-semibold text-text flex items-center gap-1.5"><span>📎</span> 项目附件</p>
               <div className="space-y-2">
                 {attachments.map((f, i) => (
                   <a key={i} href={f.url} download={f.name} target="_blank" rel="noopener noreferrer"
@@ -118,8 +91,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           )}
         </main>
 
-        {/* 右侧目录 */}
-        <div className="w-64 shrink-0 sticky top-20 space-y-4">
+        <div className="w-64 shrink-0 sticky top-20">
           {headings.length > 0 && (
             <div className="card-glass p-4">
               <TableOfContents headings={headings} />
