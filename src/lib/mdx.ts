@@ -38,13 +38,28 @@ export function getAllPosts() {
     .sort((a, b) => new Date(b.frontmatter.date).getTime() - new Date(a.frontmatter.date).getTime())
 }
 
+function makeId(text: string) {
+  return text.trim().toLowerCase().replace(/[^\w一-龥]+/g, '-').replace(/^-|-$/g, '')
+}
+
 export function extractHeadings(content: string) {
-  const matches = content.matchAll(/^(#{1,4})\s+(.+)$/gm)
-  return Array.from(matches).map(m => ({
-    level: m[1].length,
-    text: m[2].trim().replace(/\*\*|__|\*|_|`/g, ''),
-    id: m[2].trim().toLowerCase().replace(/[^\w一-龥]+/g, '-').replace(/^-|-$/g, ''),
-  }))
+  const result: { level: number; text: string; id: string }[] = []
+  for (const line of content.split('\n')) {
+    const t = line.trim()
+    // 标准 markdown 标题
+    const md = t.match(/^(#{1,4})\s+(.+)$/)
+    if (md) {
+      const text = md[2].trim().replace(/\*\*|__|\*|_|`/g, '')
+      result.push({ level: md[1].length, text, id: makeId(text) })
+      continue
+    }
+    // 数字格式标题：1. xxx 或 1.1 xxx（排除纯数字行）
+    const h2 = t.match(/^(\d+)\.\s+([^\d].+)$/)
+    if (h2) { result.push({ level: 2, text: h2[2].trim(), id: makeId(h2[2]) }); continue }
+    const h3 = t.match(/^(\d+)\.(\d+)\s+(.+)$/)
+    if (h3) { result.push({ level: 3, text: h3[3].trim(), id: makeId(h3[3]) }); continue }
+  }
+  return result
 }
 
 export function getProjectSlugs() {
