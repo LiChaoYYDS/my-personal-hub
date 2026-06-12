@@ -40,7 +40,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           <h1 className="text-2xl font-bold drop-shadow-md max-w-3xl leading-snug">{p.title}</h1>
           <p className="mt-2 text-sm text-white/80 flex items-center gap-3 flex-wrap justify-center">
             {p.year && <span>📅 {p.year}</span>}
-            {p.group && <><span>·</span><span>📁 {p.group}</span></>}
+            {p.groupText && <><span>·</span><span>📁 {p.groupText}</span></>}
             {p.github && <><span>·</span>
               <a href={p.github} target="_blank" rel="noopener noreferrer" className="hover:underline">GitHub</a>
             </>}
