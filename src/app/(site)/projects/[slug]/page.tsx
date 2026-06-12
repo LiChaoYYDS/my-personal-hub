@@ -23,8 +23,11 @@ export default async function ProjectPage({ params }: { params: { slug: string }
   const headings = extractHeadings(content)
   const attachments: { name: string; url: string; size?: number }[] = (() => {
     try {
-      const v = JSON.parse(typeof p.attachments === 'string' ? p.attachments : '[]')
-      return Array.isArray(v) ? v : []
+      let raw = typeof p.attachments === 'string' ? p.attachments : '[]'
+      let parsed = JSON.parse(raw)
+      // 兼容双重 JSON 编码
+      if (typeof parsed === 'string') parsed = JSON.parse(parsed)
+      return Array.isArray(parsed) ? parsed : []
     } catch { return [] }
   })()
 
