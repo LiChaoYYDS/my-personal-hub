@@ -2,6 +2,7 @@ import { PrismaClient } from '@prisma/client'
 import fs from 'fs'
 import path from 'path'
 import matter from 'gray-matter'
+import { randomUUID } from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -28,6 +29,7 @@ async function main() {
 
     await prisma.project.create({
       data: {
+        id: randomUUID(),
         slug,
         title: data.title || slug,
         description: data.description || '',
@@ -40,6 +42,7 @@ async function main() {
         groupText: data.group || '其他',
         icon: data.icon || '',
         attachments: JSON.stringify(data.attachments || []),
+        updatedAt: new Date(),
       },
     })
     console.log(`  Migrated ${slug}`)
