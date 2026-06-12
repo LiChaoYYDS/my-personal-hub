@@ -1,9 +1,16 @@
-import ReactMarkdown from 'react-markdown'
-import remarkGfm from 'remark-gfm'
+import { MDXRemote } from 'next-mdx-remote/rsc'
 import { notFound } from 'next/navigation'
+import rehypePrettyCode from 'rehype-pretty-code'
 import { prisma } from '@/lib/prisma'
 import { extractHeadings } from '@/lib/mdx'
 import { TableOfContents } from '@/features/blog/TableOfContents'
+import { mdxComponents } from '@/features/blog/mdxComponents'
+
+const mdxOptions = {
+  rehypePlugins: [
+    [rehypePrettyCode, { theme: 'one-dark-pro', keepBackground: true }],
+  ],
+} as any
 
 export const dynamic = 'force-dynamic'
 
@@ -14,12 +21,26 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   return { title: p.title, description: p.description }
 }
 
+async function renderContent(content: string) {
+  try {
+    return <MDXRemote source={content} components={mdxComponents} options={{ mdxOptions }} />
+  } catch {
+    // MDX 解析失败降级为纯文本
+    return <pre className="whitespace-pre-wrap text-sm text-secondary leading-relaxed">{content}</pre>
+  }
+}
+
 export default async function ProjectPage({ params }: { params: { slug: string } }) {
   const slug = decodeURIComponent(params.slug)
   const p = await prisma.project.findUnique({ where: { slug } })
   if (!p) notFound()
 
   const headings = extractHeadings(p.content ?? '')
+  const attachments: { name: string; url: string; size?: number }[] = (() => {
+    try { return JSON.parse(p.attachments || '[]') } catch { return [] }
+  })()
+
+  const contentEl = p.content?.trim() ? await renderContent(p.content) : null
 
   return (
     <>
@@ -45,11 +66,11 @@ export default async function ProjectPage({ params }: { params: { slug: string }
       </div>
 
       <div className="mx-auto max-w-6xl px-6 py-6 flex gap-6 items-start">
-        <main className="flex-1 min-w-0">
+        <main className="flex-1 min-w-0 space-y-4">
           <div className="card-glass p-8 space-y-6">
             {/* 技术栈 */}
             {p.tech?.length > 0 && (
-              <div className="flex flex-wrap gap-2 pb-4 border-b border-border">
+              <div className="flex flex-wrap gap-2 pb-5 border-b border-border">
                 {p.tech.map(t => (
                   <span key={t} className="text-xs bg-indigo-50 text-indigo-600 border border-indigo-200 rounded-full px-3 py-1">{t}</span>
                 ))}
@@ -61,15 +82,33 @@ export default async function ProjectPage({ params }: { params: { slug: string }
               <p className="text-secondary text-sm leading-relaxed">{p.description}</p>
             )}
 
-            {/* Markdown 内容 */}
-            {p.content?.trim() && (
-              <div className="article-body">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                  {p.content}
-                </ReactMarkdown>
-              </div>
-            )}
+            {/* Markdown 内容（与博客相同样式） */}
+            {contentEl && <div className="article-body">{contentEl}</div>}
           </div>
+
+          {/* 附件下载 */}
+          {attachments.length > 0 && (
+            <div className="card-glass p-6 space-y-3">
+              <p className="text-sm font-semibold text-text flex items-center gap-1.5">
+                <span>📎</span> 项目附件
+              </p>
+              <div className="space-y-2">
+                {attachments.map((f, i) => (
+                  <a key={i} href={f.url} download={f.name} target="_blank" rel="noopener noreferrer"
+                    className="flex items-center justify-between gap-3 border border-border rounded-lg px-4 py-3 hover:border-accent hover:bg-indigo-50/50 transition-all group">
+                    <div className="flex items-center gap-2 min-w-0">
+                      <span className="text-lg shrink-0">📄</span>
+                      <span className="text-sm text-text truncate group-hover:text-accent transition-colors">{f.name}</span>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                      {f.size && <span className="text-xs text-muted">{(f.size / 1024).toFixed(1)} KB</span>}
+                      <span className="text-xs bg-accent text-white rounded-md px-2 py-1">下载 ↓</span>
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </main>
 
         {/* 右侧目录 */}
