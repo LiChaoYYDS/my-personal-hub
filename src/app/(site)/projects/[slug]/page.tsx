@@ -3,6 +3,8 @@ import { prisma } from '@/lib/prisma'
 import { extractHeadings } from '@/lib/mdx'
 import { TableOfContents } from '@/features/blog/TableOfContents'
 import { ProjectMarkdown } from '@/features/project/ProjectMarkdown'
+import { serialize } from 'next-mdx-remote/serialize'
+import rehypePrettyCode from 'rehype-pretty-code'
 
 export const dynamic = 'force-dynamic'
 
@@ -21,6 +23,13 @@ export default async function ProjectPage({ params }: { params: { slug: string }
   const content = typeof p.content === 'string' ? p.content : ''
   const tech: string[] = Array.isArray(p.tech) ? p.tech : []
   const headings = extractHeadings(content)
+  const serialized = content.trim()
+    ? await serialize(content, {
+        mdxOptions: {
+          rehypePlugins: [[rehypePrettyCode, { theme: 'one-dark-pro', keepBackground: true }]],
+        } as any,
+      })
+    : null
   const attachments: { name: string; url: string; size?: number }[] = (() => {
     try {
       const v = JSON.parse(typeof p.attachments === 'string' ? p.attachments : '[]')
@@ -62,9 +71,9 @@ export default async function ProjectPage({ params }: { params: { slug: string }
               </div>
             )}
             {p.description && <p className="text-secondary text-sm leading-relaxed">{p.description}</p>}
-            {content.trim() && (
+            {serialized && (
               <div className="article-body">
-                <ProjectMarkdown content={content} />
+                <ProjectMarkdown serialized={serialized} />
               </div>
             )}
           </div>
@@ -91,7 +100,7 @@ export default async function ProjectPage({ params }: { params: { slug: string }
           )}
         </main>
 
-        <div className="w-64 shrink-0 sticky top-20">
+        <div className="w-64 shrink-0 sticky top-20 space-y-4">
           {headings.length > 0 && (
             <div className="card-glass p-4">
               <TableOfContents headings={headings} />
