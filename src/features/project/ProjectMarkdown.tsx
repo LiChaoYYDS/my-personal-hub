@@ -1,7 +1,7 @@
 'use client'
-import { MDXRemote, type MDXRemoteSerializeResult } from 'next-mdx-remote'
-
-interface Props { serialized: MDXRemoteSerializeResult }
+import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
+import rehypeHighlight from 'rehype-highlight'
 
 function makeId(text: unknown) {
   return String(text).toLowerCase().replace(/[^\w一-龥]+/g, '-').replace(/^-|-$/g, '')
@@ -14,6 +14,10 @@ const components = {
   h4: ({ children }: any) => <h4 id={makeId(children)}>{children}</h4>,
 }
 
-export function ProjectMarkdown({ serialized }: Props) {
-  return <MDXRemote {...serialized} components={components} />
+export function ProjectMarkdown({ content }: { content: string }) {
+  return (
+    <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeHighlight]} components={components}>
+      {content}
+    </ReactMarkdown>
+  )
 }
