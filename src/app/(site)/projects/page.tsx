@@ -23,7 +23,7 @@ export default async function ProjectsPage() {
       demo: p.demo,
       published: p.published,
       year: p.year,
-      group: p.groupText,
+      group: p.group,
       icon: p.icon,
     } as ProjectFrontmatter,
   }))
