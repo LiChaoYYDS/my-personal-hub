@@ -31,6 +31,7 @@ export async function POST(req: NextRequest) {
       summary: summary || '',
       published: published ?? false,
       date: date ? new Date(date) : new Date(),
+      updatedAt: new Date(),
     },
   })
 
