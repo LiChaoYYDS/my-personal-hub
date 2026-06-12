@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client'
 import bcrypt from 'bcryptjs'
+import { randomUUID } from 'crypto'
 
 const prisma = new PrismaClient()
 
@@ -12,7 +13,7 @@ async function main() {
   await prisma.user.upsert({
     where: { email },
     update: { password: hashed },
-    create: { email, password: hashed },
+    create: { id: randomUUID(), email, password: hashed },
   })
   console.log('Admin account ready:', email)
 }
