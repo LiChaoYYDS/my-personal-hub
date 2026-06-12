@@ -3,8 +3,16 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeHighlight from 'rehype-highlight'
 
-function makeId(text: unknown) {
-  return String(text).toLowerCase().replace(/[^\w一-龥]+/g, '-').replace(/^-|-$/g, '')
+function extractText(node: unknown): string {
+  if (typeof node === 'string') return node
+  if (Array.isArray(node)) return node.map(extractText).join('')
+  if (node && typeof node === 'object' && 'props' in (node as any))
+    return extractText((node as any).props?.children)
+  return ''
+}
+
+function makeId(children: unknown) {
+  return extractText(children).toLowerCase().replace(/[^\w一-龥]+/g, '-').replace(/^-|-$/g, '')
 }
 
 const components = {
