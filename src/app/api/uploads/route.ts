@@ -38,15 +38,18 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ success: false, message: '文件不能超过 50MB' }, { status: 400 })
   }
 
-  const buffer = Buffer.from(await file.arrayBuffer())
-  const base64 = buffer.toString('base64')
-  const dataUrl = 'data:' + file.type + ';base64,' + base64
+  try {
+    const buffer = Buffer.from(await file.arrayBuffer())
+    const base64 = buffer.toString('base64')
+    const dataUrl = 'data:' + file.type + ';base64,' + base64
 
-  const upload = await prisma.upload.create({
-    data: { key: 'uploads/' + Date.now(), url: dataUrl, size: file.size, mimeType: file.type },
-  })
+    const upload = await prisma.upload.create({
+      data: { key: 'uploads/' + Date.now() + '_' + Math.random().toString(36).slice(2), url: dataUrl, size: file.size, mimeType: file.type },
+    })
 
-  // 返回短 URL，通过 /api/uploads/[id] 代理访问文件
-  const shortUrl = '/api/uploads/' + upload.id
-  return NextResponse.json({ success: true, data: { ...upload, url: shortUrl }, message: '' })
+    const shortUrl = '/api/uploads/' + upload.id
+    return NextResponse.json({ success: true, data: { ...upload, url: shortUrl }, message: '' })
+  } catch (e: any) {
+    return NextResponse.json({ success: false, message: e?.message ?? '上传失败' }, { status: 500 })
+  }
 }
