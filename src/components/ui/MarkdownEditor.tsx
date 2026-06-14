@@ -12,9 +12,23 @@ interface Props {
 async function uploadImage(file: File): Promise<string | null> {
   const fd = new FormData()
   fd.append('file', file)
-  const res = await fetch('/api/uploads', { method: 'POST', body: fd })
-  const data = await res.json()
-  return data.success ? data.data.url : null
+  try {
+    const res = await fetch('/api/uploads', { method: 'POST', body: fd })
+    const text = await res.text()
+    if (!text.trim()) {
+      alert('上传失败：服务器无响应（' + res.status + '）')
+      return null
+    }
+    const data = JSON.parse(text)
+    if (!data.success) {
+      alert('上传失败：' + (data.message || '未知错误'))
+      return null
+    }
+    return data.data.url
+  } catch (e: any) {
+    alert('上传失败：' + (e?.message || '网络错误'))
+    return null
+  }
 }
 
 function insertAt(ta: HTMLTextAreaElement, before: string, after = '', placeholder = '') {
